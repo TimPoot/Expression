@@ -1,7 +1,7 @@
 #include "ExpressionTree.h" 
 #include <sstream>
 #include <iostream>
-#include <cstdlib>
+#include <stdlib.h>
 
 using namespace std;
 
@@ -25,31 +25,32 @@ void ExpressionTree::parse(string s){
 }
 
 Token ExpressionTree::translate(string s){
-  switch (atoi(s)) {
+  Token a;
+  switch (atoi(s.c_str())) {
    //case (s.front() >= '0' && s.front() <= '9'):
      //return Token a {Token::NUMBER, atof(s.c_str())};
-   case atoi("pi"):
-     return Token a {Token::NUMBER, 3.14};
+   case atoi("pi".c_str()):
+     a {Token::NUMBER, 3.14};
  
-   case atoi("+"):
-     return Token a {Token::PLUS, s.front()};
+   case atoi("+".c_str()):
+     return Token a {Token::PLUS, '+'};
 
-   case atoi("-"):
-     return Token a {Token::MINUS, s.front()};
+   case atoi("-".c_str()):
+     return Token a {Token::MINUS, '-'};
 
-   case atoi("*"):
-     return Token a {Token::MULTIPLY, s.front()};
+   case atoi("*".c_str()):
+     return Token a {Token::MULTIPLY, '*'};
 
-   case atoi("/"):
-     return Token a {Token::DIVIDE, s.front()};
+   case atoi("/".c_str()):
+     return Token a {Token::DIVIDE, '/'};
 
-   case atoi("^"):
-     return Token a {Token::POWER, s.front()};
+   case atoi("^".c_str()):
+     return Token a {Token::POWER, '^'};
    
-   case atoi("cos"):
+   case atoi("cos".c_str()):
      return Token a {Token::COS, 'c'};
    
-   case atoi("sin"):
+   case atoi("sin".c_str()):
      return Token a {Token::SIN, 's'};
 
    //case (s.front() >= 'a' && s.front <= 'z')
