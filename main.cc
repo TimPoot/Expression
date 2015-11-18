@@ -1,15 +1,14 @@
 #include <iostream>
 #include "ExpressionTree.h"
+#include <cstdlib>
 
 using namespace std;
 
 int main(){
   ExpressionTree myTree;
-  Token a {Token::VARIABLE, 'x'};
-  myTree.parse("+ 1 2");
-
-
-  
+  myTree.parse("+ 1 2 cos sin -15 ^ * / : + - c");
+  myTree.showPreOrder();
+  myTree.showInOrder();
 
   return 0;
 }
