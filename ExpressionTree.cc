@@ -69,33 +69,65 @@ Token ExpressionTree::translate(string s){
   return a;
 }
 
-//might still need to be done via pointers
-bool ExpressionTree::isBinaryOperator(Token a) const{
-  if (a.type == Token::PLUS
-      || a.type == Token::MINUS
-      || a.type == Token::MULTIPLY
-      || a.type == Token::DIVIDE
-      || a.type == Token::POWER  
+
+bool ExpressionTree::isBinaryOperator(TreeNode<Token> *p) const{
+  if (p->getInfo().type == Token::PLUS
+      || p->getInfo().type == Token::MINUS
+      || p->getInfo().type == Token::MULTIPLY
+      || p->getInfo().type == Token::DIVIDE
+      || p->getInfo().type == Token::POWER  
   ){
     return true;
   }else
-  return false;
+    return false;
 }
 
+bool ExpressionTree::isTerminal(TreeNode<Token> *p) const{
+  if(p->getInfo().type == Token::VARIABLE
+     || p->getInfo().type == Token::NUMBER
+  ){
+    return true;   
+  }else
+    return false;
+}
 
-void ExpressionTree::insert(Token a){
-  if (isBinaryOperator(a)){
-    
+void ExpressionTree::insert(Token &a){
+  if (this->entrance == NULL){
+    this->entrance = new TreeNode<Token>(a, counter);
+  }else{
+    insert(a, this->entrance);
   }
-
-
-
+  counter++;
 }
 
 
-//void ExpressionTree::biInsert(){}
-
-//void ExpressionTree::MonoInsert(){}
+void ExpressionTree::insert(Token &a, TreeNode<Token> *p){
+  if (!isBinaryOperator(p)){
+    if (!isTerminal(p)){
+      if (p->getLeft() == NULL){
+        p->setLeft(new TreeNode<Token>(a, counter));
+      }else{
+        insert(a, p->getLeft());
+      }
+    }else{
+      cout << "ERROR" << endl;
+    }
+  }else{//isBinaryOperator()
+    if (p->getLeft() == NULL){
+      p->setLeft(new TreeNode<Token>(a, counter));
+    }else{
+      if (isTerminal(p->getLeft())){
+        if (p->getRight() == NULL){
+          p->setRight(new TreeNode<Token>(a, counter));
+        }else{
+          insert(a, p->getRight());
+        }
+      }else{
+        insert(a, p->getLeft());
+      }
+    }
+  }
+}
 
 
 

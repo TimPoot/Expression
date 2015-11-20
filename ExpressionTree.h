@@ -23,8 +23,10 @@ class ExpressionTree : public Tree<Token>{
     void printToken(TreeNode<Token> *p);
     void showPreOrder(TreeNode<Token> *p);
     void showInOrder(TreeNode<Token> *p);
-    bool isBinaryOperator(Token a) const;
-    void insert(Token a);
+    bool isBinaryOperator(TreeNode<Token> *p) const;
+    bool isTerminal(TreeNode<Token> *p) const;
+    void insert(Token &a);
+    void insert(Token &a, TreeNode<Token> *p);
     Token translate (string s); 
 };
 
