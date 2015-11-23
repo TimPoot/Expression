@@ -13,7 +13,6 @@ struct Token {
   };
 };
 
-
 class ExpressionTree : public Tree<Token>{
   public:
     void parse (string s);
@@ -24,14 +23,11 @@ class ExpressionTree : public Tree<Token>{
     void showPreOrder(TreeNode<Token> *p);
     void showInOrder(TreeNode<Token> *p);
     bool isBinaryOperator(TreeNode<Token> *p) const;
+    bool isUnaryOperator(TreeNode<Token> *p) const;
     bool isTerminal(TreeNode<Token> *p) const;
-    void insert(Token &a);
-    void insert(Token &a, TreeNode<Token> *p);
+    void insert(Token a);
+    void insert(Token a, TreeNode<Token> *p, bool &found);
     Token translate (string s); 
 };
-
-
-
-
 
 #endif

@@ -82,6 +82,16 @@ bool ExpressionTree::isBinaryOperator(TreeNode<Token> *p) const{
     return false;
 }
 
+bool ExpressionTree::isUnaryOperator(TreeNode<Token> *p) const{
+  if(p->getInfo().type == Token::COS
+     || p->getInfo().type == Token::SIN
+  ){
+    return true;
+  }else{
+    return false;
+  }
+}
+
 bool ExpressionTree::isTerminal(TreeNode<Token> *p) const{
   if(p->getInfo().type == Token::VARIABLE
      || p->getInfo().type == Token::NUMBER
@@ -91,66 +101,55 @@ bool ExpressionTree::isTerminal(TreeNode<Token> *p) const{
     return false;
 }
 
-void ExpressionTree::insert(Token &a){
+void ExpressionTree::insert(Token a){
+  bool found = false;
   if (this->entrance == NULL){
     this->entrance = new TreeNode<Token>(a, counter);
   }else{
-    insert(a, this->entrance);
+    insert(a, this->entrance, found);
   }
   counter++;
 }
 
 
-void ExpressionTree::insert(Token &a, TreeNode<Token> *p){
-  if (!isBinaryOperator(p)){
-    if (!isTerminal(p)){
-      if (p->getLeft() == NULL){
+void ExpressionTree::insert(Token a, TreeNode<Token> *p, bool &found){
+  if(isBinaryOperator(p)){
+    if(p->getLeft() == NULL){
+      if (!found){
         p->setLeft(new TreeNode<Token>(a, counter));
-      }else{
-        insert(a, p->getLeft());
       }
+      found = true;
+      return;
     }else{
-      cout << "ERROR" << endl;
+      insert(a, p->getLeft(), found);
     }
-  }else{//isBinaryOperator()
-    if (p->getLeft() == NULL){
-      p->setLeft(new TreeNode<Token>(a, counter));
-    }else{
-      if (isTerminal(p->getLeft())){
-        if (p->getRight() == NULL){
-          p->setRight(new TreeNode<Token>(a, counter));
-        }else{
-          insert(a, p->getRight());
-        }
-      }else{
-        insert(a, p->getLeft());
+    if(p->getRight() == NULL){
+      if(!found){
+        p->setRight(new TreeNode<Token>(a, counter));
       }
+      found = true;
+      return;
+    }else{
+      insert(a, p->getRight(), found);
     }
   }
+  
+  if(isUnaryOperator(p)){
+     if(p->getLeft() == NULL){
+      if(!found){
+        p->setLeft(new TreeNode<Token>(a, counter));
+      }
+      found = true;
+      return;
+    }else{
+      insert(a, p->getLeft(), found);
+    }   
+  }
+  
+  if(isTerminal(p)){
+    return;
+  }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 void ExpressionTree::showPreOrder(){
   if (this->entrance != NULL){
