@@ -248,6 +248,7 @@ void ExpressionTree::unarySimplify(TreeNode<Token> *p){
 
 void ExpressionTree::binarySimplify(TreeNode<Token> *p){
   Token a = {Token::ERROR, '!'};
+  //num . num
   if (p->getLeft()->getInfo().type == Token::NUMBER
    && p->getRight()->getInfo().type == Token::NUMBER
   ){
@@ -288,9 +289,10 @@ void ExpressionTree::binarySimplify(TreeNode<Token> *p){
     }
     
   }
+  //var1 . var2 (var1 = var2)
   if (p->getLeft()->getInfo().type == Token::VARIABLE
    && p->getRight()->getInfo().type == Token::VARIABLE
-   && p->getLeft()->getInfo().type == p->getRight()->getInfo().type
+   && p->getLeft()->getInfo().variable == p->getRight()->getInfo().variable
   ){
     if (p->getInfo().type == Token::MINUS){
       a.type = Token::NUMBER;
@@ -306,16 +308,111 @@ void ExpressionTree::binarySimplify(TreeNode<Token> *p){
       delete p->getLeft();
       delete p->getRight();
   }
+  //var . num
   if (p->getLeft()->getInfo().type == Token::VARIABLE
    && p->getRight()->getInfo().type == Token::NUMBER
   ){
-    if (p->getInfo().type == Token::PLUS)
+    if (p->getRight()->getInfo().number == 0) {//what about divide?
+      if (p->getInfo().type == Token::MULTIPLY){
+        a.type = Token::NUMBER;
+        a.number = 0;
+        p->setInfo(a);
+        delete p->getLeft();
+        delete p->getRight();
+      }
+      if (p->getInfo().type == Token::POWER){
+        a.type = Token::NUMBER;
+        a.number = 1;
+        p->setInfo(a);
+        delete p->getLeft();
+        delete p->getRight();
+      }
+    }
+    if (p->getRight()->getInfo().number == 1){
+      if(p->getInfo().type == Token::MULTIPLY){
+        a.type = Token::VARIABLE;
+        a.variable = p->getLeft()->getInfo().variable;
+        p->setInfo(a);
+        delete p->getLeft();
+        delete p->getRight();
+      }
+      if(p->getInfo().type == Token::DIVIDE){
+        a.type = Token::VARIABLE;
+        a.variable = p->getLeft()->getInfo().variable;
+        p->setInfo(a);
+        delete p->getLeft();
+        delete p->getRight();
+      }
+      if(p->getInfo().type == Token::POWER){
+        a.type = Token::VARIABLE;
+        a.variable = p->getLeft()->getInfo().variable;
+        p->setInfo(a);
+        delete p->getLeft();
+        delete p->getRight();
+      }
+    }
+  }
+  //num . var
+  if(p->getLeft()->getInfo().type == Token::NUMBER
+     && p->getRight()->getInfo().type == Token::VARIABLE){
+    if (p->getLeft()->getInfo().number == 0) {
+      if (p->getInfo().type == Token::PLUS){
+        a.type = Token::VARIABLE;
+        a.variable = p->getRight()->getInfo().variable;
+        p->setInfo(a);
+        delete p->getLeft();
+        delete p->getRight();
+      }
+      if (p->getInfo().type == Token::MINUS){
+        a.type = Token::VARIABLE;
+        a.variable = p->getRight()->getInfo().variable;
+        p->setInfo(a);
+        delete p->getLeft();
+        delete p->getRight();
+      }
+      if (p->getInfo().type == Token::MULTIPLY){
+        a.type = Token::NUMBER;
+        a.number = 0;
+        p->setInfo(a);
+        delete p->getLeft();
+        delete p->getRight();
+      }
+      if (p->getInfo().type == Token::DIVIDE){
+        a.type = Token::NUMBER;
+        a.number = 0;
+        p->setInfo(a);
+        delete p->getLeft();
+        delete p->getRight();
+      }
+    }
+    if (p->getRight()->getInfo().number == 1){
+      if(p->getInfo().type == Token::MULTIPLY){
+        a.type = Token::VARIABLE;
+        a.variable = p->getRight()->getInfo().variable;
+        p->setInfo(a);
+        delete p->getLeft();
+        delete p->getRight();
+      }
+      if(p->getInfo().type == Token::DIVIDE){
+        a.type = Token::VARIABLE;
+        a.variable = p->getRight()->getInfo().variable;
+        p->setInfo(a);
+        delete p->getLeft();
+        delete p->getRight();
+      }
+    }
   }
 }
 
+
+
+
+
+
+
+/*
 void ExpressionTree::switchInfo(TreeNode<Token> *p, Token.type t, double d){
   Token a = {Token::ERROR, '!'};
-  
   a.type = t;
   a.number = d;
   p->setInfo(a);
@@ -326,4 +423,4 @@ void ExpressionTree::switchInfo(TreeNode<Token> *p, Token.type t, double d){
     delete p->getRight();  
   }
 }
-
+*/
