@@ -3,6 +3,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <string>
+#include <cmath>
 
 using namespace std;
 
@@ -68,6 +69,9 @@ Token ExpressionTree::translate(string s){
 
   return a;
 }
+
+
+
 
 
 bool ExpressionTree::isBinaryOperator(TreeNode<Token> *p) const{
@@ -199,11 +203,127 @@ void ExpressionTree::printToken(TreeNode<Token> *p){
   }
 }
 
+void ExpressionTree::simplify(){
+  if (this->entrance != NULL){
+    simplify(this->entrance);
+  }else
+  cout << "Tree is empty!" << endl;
+}
 
+void ExpressionTree::simplify(TreeNode<Token> *p){
+  if(isUnaryOperator(p)){
+    if(p->getLeft() != NULL){
+      simplify(p->getLeft());
+    }
+    unarySimplify(p);
+  }
+  if(isBinaryOperator(p)){
+    if (p->getLeft() != NULL){
+      simplify(p->getLeft());
+    }
+    if (p->getRight() != NULL){
+      simplify(p->getRight());
+    }
+    binarySimplify(p);
+  }
+}
 
+void ExpressionTree::unarySimplify(TreeNode<Token> *p){
+  Token a = {Token::ERROR, '!'};
+  if (p->getLeft()->getInfo().type == Token::NUMBER){
+    if (p->getInfo().type == Token::SIN){
+      a.type = Token::NUMBER;
+      a.number = sin(p->getLeft()->getInfo().number);
+      p->setInfo(a);
+      delete p->getLeft();
+    }
+    if (p->getInfo().type == Token::COS){
+      a.type = Token::NUMBER;
+      a.number = cos(p->getLeft()->getInfo().number);
+      p->setInfo(a);
+      delete p->getLeft();
+    }
+  }    
+}
 
+void ExpressionTree::binarySimplify(TreeNode<Token> *p){
+  Token a = {Token::ERROR, '!'};
+  if (p->getLeft()->getInfo().type == Token::NUMBER
+   && p->getRight()->getInfo().type == Token::NUMBER
+  ){
+    if (p->getInfo().type == Token::PLUS){
+      a.type = Token::NUMBER;
+      a.number = p->getLeft()->getInfo().number + p->getRight()->getInfo().number;
+      p->setinfo(a);
+      delete p->getLeft();
+      delete p->getRight();
+    }
+    if (p->getInfo().type == Token::MINUS){
+      a.type = Token::NUMBER;
+      a.number = p->getLeft()->getInfo().number - p->getRight()->getInfo().number;
+      p->setinfo(a);
+      delete p->getLeft();
+      delete p->getRight();
+    }
+    if (p->getInfo().type == Token::MULTIPLY){
+      a.type = Token::NUMBER;
+      a.number = p->getLeft()->getInfo().number * p->getRight()->getInfo().number;
+      p->setinfo(a);
+      delete p->getLeft();
+      delete p->getRight();
+    }
+    if (p->getInfo().type == Token::DIVIDE){
+      a.type = Token::NUMBER;
+      a.number = p->getLeft()->getInfo().number / p->getRight()->getInfo().number;
+      p->setinfo(a);
+      delete p->getLeft();
+      delete p->getRight();
+    }
+    if (p->getInfo().type == Token::POWER){
+      a.type = Token::NUMBER;
+      a.number = pow(p->getLeft()->getInfo().number, p->getRight()->getInfo().number);
+      p->setinfo(a);
+      delete p->getLeft();
+      delete p->getRight();
+    }
+    
+  }
+  if (p->getLeft()->getInfo().type == Token::VARIABLE
+   && p->getRight()->getInfo().type == Token::VARIABLE
+   && p->getLeft()->getInfo().type == p->getRight()->getInfo().type
+  ){
+    if (p->getInfo().type == Token::MINUS){
+      a.type = Token::NUMBER;
+      a.number = 0;
+      p->setinfo(a);
+      delete p->getLeft();
+      delete p->getRight();
+    }
+    if (p->getInfo().type == Token::DIVIDE)
+      a.type = Token::NUMBER;
+      a.number = 1;
+      p->setinfo(a);
+      delete p->getLeft();
+      delete p->getRight();
+  }
+  if (p->getLeft()->getInfo().type == Token::VARIABLE
+   && p->getRight()->getInfo().type == Token::NUMBER
+  ){
+    if (p->getInfo().type == Token::PLUS)
+  }
+}
 
-
-
-
+void ExpressionTree::switchInfo(TreeNode<Token> *p, Token.type t, double d){
+  Token a = {Token::ERROR, '!'};
+  
+  a.type = t;
+  a.number = d;
+  p->setInfo(a);
+  if(p->getLeft() != NULL){
+    delete p->getLeft();  
+  }
+  if(p->getRight() != NULL){
+    delete p->getRight();  
+  }
+}
 
