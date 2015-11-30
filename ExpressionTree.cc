@@ -139,14 +139,14 @@ void ExpressionTree::insert(Token a, TreeNode<Token> *p, bool &found){
   }
   
   if(isUnaryOperator(p)){
-     if(p->getLeft() == NULL){
+     if(p->getRight() == NULL){
       if(!found){
-        p->setLeft(new TreeNode<Token>(a, counter));
+        p->setRight(new TreeNode<Token>(a, counter));
       }
       found = true;
       return;
     }else{
-      insert(a, p->getLeft(), found);
+      insert(a, p->getRight(), found);
     }   
   }
   
@@ -230,18 +230,22 @@ void ExpressionTree::simplify(TreeNode<Token> *p){
 
 void ExpressionTree::unarySimplify(TreeNode<Token> *p){
   Token a = {Token::ERROR, '!'};
-  if (p->getLeft()->getInfo().type == Token::NUMBER){
+  if (p->getRight()->getInfo().type == Token::NUMBER){
     if (p->getInfo().type == Token::SIN){
       a.type = Token::NUMBER;
-      a.number = sin(p->getLeft()->getInfo().number);
+      a.number = sin(p->getRight()->getInfo().number);
       p->setInfo(a);
-      delete p->getLeft();
+      delete p->getRight();
+      p->setRight(NULL);
+      return;
     }
     if (p->getInfo().type == Token::COS){
       a.type = Token::NUMBER;
-      a.number = cos(p->getLeft()->getInfo().number);
+      a.number = cos(p->getRight()->getInfo().number);
       p->setInfo(a);
-      delete p->getLeft();
+      delete p->getRight();
+      p->setRight(NULL);
+      return;
     }
   }    
 }
@@ -255,37 +259,52 @@ void ExpressionTree::binarySimplify(TreeNode<Token> *p){
     if (p->getInfo().type == Token::PLUS){
       a.type = Token::NUMBER;
       a.number = p->getLeft()->getInfo().number + p->getRight()->getInfo().number;
-      p->setinfo(a);
+      p->setInfo(a);
       delete p->getLeft();
+      p->setLeft(NULL);
       delete p->getRight();
+      p->setRight(NULL);
+      return;
     }
     if (p->getInfo().type == Token::MINUS){
       a.type = Token::NUMBER;
       a.number = p->getLeft()->getInfo().number - p->getRight()->getInfo().number;
-      p->setinfo(a);
+      p->setInfo(a);
       delete p->getLeft();
+      p->setLeft(NULL);
       delete p->getRight();
+      p->setRight(NULL);
+      return;
     }
     if (p->getInfo().type == Token::MULTIPLY){
       a.type = Token::NUMBER;
       a.number = p->getLeft()->getInfo().number * p->getRight()->getInfo().number;
-      p->setinfo(a);
+      p->setInfo(a);
       delete p->getLeft();
+      p->setLeft(NULL);
       delete p->getRight();
+      p->setRight(NULL);
+      return;
     }
     if (p->getInfo().type == Token::DIVIDE){
       a.type = Token::NUMBER;
       a.number = p->getLeft()->getInfo().number / p->getRight()->getInfo().number;
-      p->setinfo(a);
+      p->setInfo(a);
       delete p->getLeft();
+      p->setLeft(NULL);
       delete p->getRight();
+      p->setRight(NULL);
+      return;
     }
     if (p->getInfo().type == Token::POWER){
       a.type = Token::NUMBER;
       a.number = pow(p->getLeft()->getInfo().number, p->getRight()->getInfo().number);
-      p->setinfo(a);
+      p->setInfo(a);
       delete p->getLeft();
+      p->setLeft(NULL);
       delete p->getRight();
+      p->setRight(NULL);
+      return;
     }
     
   }
@@ -297,109 +316,38 @@ void ExpressionTree::binarySimplify(TreeNode<Token> *p){
     if (p->getInfo().type == Token::MINUS){
       a.type = Token::NUMBER;
       a.number = 0;
-      p->setinfo(a);
+      p->setInfo(a);
       delete p->getLeft();
+      p->setLeft(NULL);
       delete p->getRight();
+      p->setRight(NULL);
+      return;
     }
     if (p->getInfo().type == Token::DIVIDE)
       a.type = Token::NUMBER;
       a.number = 1;
-      p->setinfo(a);
+      p->setInfo(a);
       delete p->getLeft();
+      p->setLeft(NULL);
       delete p->getRight();
+      p->setRight(NULL);
+      return;
   }
-  //var . num
-  if (p->getLeft()->getInfo().type == Token::VARIABLE
-   && p->getRight()->getInfo().type == Token::NUMBER
-  ){
-    if (p->getRight()->getInfo().number == 0) {//what about divide?
-      if (p->getInfo().type == Token::MULTIPLY){
-        a.type = Token::NUMBER;
-        a.number = 0;
-        p->setInfo(a);
-        delete p->getLeft();
-        delete p->getRight();
-      }
-      if (p->getInfo().type == Token::POWER){
-        a.type = Token::NUMBER;
-        a.number = 1;
-        p->setInfo(a);
-        delete p->getLeft();
-        delete p->getRight();
-      }
-    }
-    if (p->getRight()->getInfo().number == 1){
-      if(p->getInfo().type == Token::MULTIPLY){
-        a.type = Token::VARIABLE;
-        a.variable = p->getLeft()->getInfo().variable;
-        p->setInfo(a);
-        delete p->getLeft();
-        delete p->getRight();
-      }
-      if(p->getInfo().type == Token::DIVIDE){
-        a.type = Token::VARIABLE;
-        a.variable = p->getLeft()->getInfo().variable;
-        p->setInfo(a);
-        delete p->getLeft();
-        delete p->getRight();
-      }
-      if(p->getInfo().type == Token::POWER){
-        a.type = Token::VARIABLE;
-        a.variable = p->getLeft()->getInfo().variable;
-        p->setInfo(a);
-        delete p->getLeft();
-        delete p->getRight();
-      }
-    }
-  }
-  //num . var
-  if(p->getLeft()->getInfo().type == Token::NUMBER
-     && p->getRight()->getInfo().type == Token::VARIABLE){
-    if (p->getLeft()->getInfo().number == 0) {
+  if (p->getLeft()->getInfo().type == NUMBER){
+    if (p->getLeft()->getInfo().number == 0){
       if (p->getInfo().type == Token::PLUS){
-        a.type = Token::VARIABLE;
-        a.variable = p->getRight()->getInfo().variable;
-        p->setInfo(a);
-        delete p->getLeft();
-        delete p->getRight();
-      }
-      if (p->getInfo().type == Token::MINUS){
-        a.type = Token::VARIABLE;
-        a.variable = p->getRight()->getInfo().variable;
-        p->setInfo(a);
-        delete p->getLeft();
-        delete p->getRight();
-      }
-      if (p->getInfo().type == Token::MULTIPLY){
-        a.type = Token::NUMBER;
-        a.number = 0;
-        p->setInfo(a);
-        delete p->getLeft();
-        delete p->getRight();
-      }
-      if (p->getInfo().type == Token::DIVIDE){
-        a.type = Token::NUMBER;
-        a.number = 0;
-        p->setInfo(a);
-        delete p->getLeft();
-        delete p->getRight();
-      }
+        
     }
-    if (p->getRight()->getInfo().number == 1){
-      if(p->getInfo().type == Token::MULTIPLY){
-        a.type = Token::VARIABLE;
-        a.variable = p->getRight()->getInfo().variable;
-        p->setInfo(a);
-        delete p->getLeft();
-        delete p->getRight();
-      }
-      if(p->getInfo().type == Token::DIVIDE){
-        a.type = Token::VARIABLE;
-        a.variable = p->getRight()->getInfo().variable;
-        p->setInfo(a);
-        delete p->getLeft();
-        delete p->getRight();
-      }
+    if (p->getLeft()->getInfo().number == 1){
+    
+    }
+  }
+  if (p->getRight()->getInfo().type == NUMBER){
+    if (p->getLeft()->getInfo().number == 0){
+      if (p
+    }
+    if (p->getLeft()->getInfo().number == 1){
+      if (p
     }
   }
 }

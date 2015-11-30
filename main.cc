@@ -7,8 +7,8 @@ using namespace std;
 
 int main(){
   ExpressionTree myTree;
-  myTree.parse("+ - 1 2 - 3 4");
-  //myTree.parse("+ cos x - 1 2");
+  //myTree.parse("+ - 1 2 - 3 4");
+  myTree.parse("+ cos x - 1 1");
   //myTree.parse("cos 20");
   cout << "---------------------" << endl;
   myTree.showPreOrder();
@@ -17,10 +17,6 @@ int main(){
   cout << "---------------------" << endl;
   myTree.showPreOrder();
   myTree.showInOrder();
-
-  cout << "---------------------" << endl;
-  double var = 20;
-  cout << cos(var) << endl;
   return 0;
 }
 
