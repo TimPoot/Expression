@@ -323,7 +323,7 @@ void ExpressionTree::binarySimplify(TreeNode<Token> *p){
       p->setRight(NULL);
       return;
     }
-    if (p->getInfo().type == Token::DIVIDE)
+    if (p->getInfo().type == Token::DIVIDE) {
       a.type = Token::NUMBER;
       a.number = 1;
       p->setInfo(a);
@@ -332,22 +332,128 @@ void ExpressionTree::binarySimplify(TreeNode<Token> *p){
       delete p->getRight();
       p->setRight(NULL);
       return;
+    }
   }
   if (p->getLeft()->getInfo().type == NUMBER){
     if (p->getLeft()->getInfo().number == 0){
-      if (p->getInfo().type == Token::PLUS){
-        
+      if (p->getInfo().type == Token::PLUS) {
+        a.type = Token::VARIABLE;
+        a.variable = p->getRight()->getInfo().variable;
+        p->setInfo(a);
+        delete p->getLeft();
+        p->setLeft(NULL);
+        delete p->getRight();
+        p->setRight(NULL);
+        return;
+      }
+      if (p->getInfo().type == Token::MULTIPLY) {
+        a.type = Token::NUMBER;
+        a.number = 0;
+        p->setInfo(a);
+        delete p->getLeft();
+        p->setLeft(NULL);
+        delete p->getRight();
+        p->setRight(NULL);
+        return;
+      }
+      if (p->getInfo().type == Token::POWER) {
+        a.type = Token::NUMBER;
+        a.number = 0;
+        p->setInfo(a);
+        delete p->getLeft();
+        p->setLeft(NULL);
+        delete p->getRight();
+        p->setRight(NULL);
+        return;
+      }
     }
     if (p->getLeft()->getInfo().number == 1){
-    
+      if (p->getInfo().type == Token::MULTIPLY) {
+        a.type = Token::VARIABLE;
+        a.variable = p->getRight()->getInfo().variable;
+        p->setInfo(a);
+        delete p->getLeft();
+        p->setLeft(NULL);
+        delete p->getRight();
+        p->setRight(NULL);
+        return;
+      }
+      if (p->getInfo().type == Token::POWER) {
+        a.type = Token::NUMBER;
+        a.number = 1;
+        p->setInfo(a);
+        delete p->getLeft();
+        p->setLeft(NULL);
+        delete p->getRight();
+        p->setRight(NULL);
+        return;
+      }
     }
   }
   if (p->getRight()->getInfo().type == NUMBER){
     if (p->getLeft()->getInfo().number == 0){
-      if (p
+      if (p->getInfo().type == Token::PLUS) {
+        a.type = Token::VARIABLE;
+        a.variable = p->getLeft()->getInfo().variable;
+        p->setInfo(a);
+        delete p->getLeft();
+        p->setLeft(NULL);
+        delete p->getRight();
+        p->setRight(NULL);
+        return;
+      }
+      if (p->getInfo().type == Token::MINUS) {
+        a.type = Token::VARIABLE;
+        a.variable = p->getLeft()->getInfo().variable;
+        p->setInfo(a);
+        delete p->getLeft();
+        p->setLeft(NULL);
+        delete p->getRight();
+        p->setRight(NULL);
+        return;
+      }
+      if (p->getInfo().type == Token::MULTIPLY) {
+        a.type = Token::NUMBER;
+        a.number = 0;
+        p->setInfo(a);
+        delete p->getLeft();
+        p->setLeft(NULL);
+        delete p->getRight();
+        p->setRight(NULL);
+        return;
+      }
+      if (p->getInfo().type == Token::MULTIPLY) {
+        a.type = Token::NUMBER;
+        a.number = 1;
+        p->setInfo(a);
+        delete p->getLeft();
+        p->setLeft(NULL);
+        delete p->getRight();
+        p->setRight(NULL);
+        return;
+      }
     }
     if (p->getLeft()->getInfo().number == 1){
-      if (p
+      if (p->getInfo().type == Token::MULTIPLY) {
+        a.type = Token::VARIABLE;
+        a.variable = p->getLeft()->getInfo().variable;
+        p->setInfo(a);
+        delete p->getLeft();
+        p->setLeft(NULL);
+        delete p->getRight();
+        p->setRight(NULL);
+        return;
+      }
+      if (p->getInfo().type == Token::POWER) {
+        a.type = Token::VARIABLE;
+        a.variable = p->getLeft()->getInfo().variable;
+        p->setInfo(a);
+        delete p->getLeft();
+        p->setLeft(NULL);
+        delete p->getRight();
+        p->setRight(NULL);
+        return;
+      }
     }
   }
 }
