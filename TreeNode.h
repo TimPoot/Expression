@@ -7,23 +7,19 @@ using namespace std;
 template <class T>
 class TreeNode {
   public:
-    TreeNode(T& newInfo, int counter){
+    TreeNode(T& newInfo){
       setInfo(newInfo);
-      setLabel(counter);
       setLeft(NULL);
       setRight(NULL);   
     } 
     void setInfo(T newInfo);
     T getInfo();
-    void setLabel(int newLabel);
-    int getLabel();
     void setLeft(TreeNode *newLeft);
     TreeNode<T>* getLeft();
     void setRight(TreeNode *newRight);
     TreeNode<T>* getRight();
   protected:
     T info;
-    int label;
     TreeNode *left;
     TreeNode *right;
   private:
@@ -37,16 +33,6 @@ void TreeNode<T>::setInfo(T newInfo){
 template <class T>
 T TreeNode<T>::getInfo(){
   return info;
-}
-
-template <class T>
-void TreeNode<T>::setLabel(int newLabel){
-  label = newLabel;
-}
-
-template <class T>
-int TreeNode<T>::getLabel(){
-  return label;
 }
 
 template <class T>

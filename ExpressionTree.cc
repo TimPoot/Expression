@@ -108,11 +108,10 @@ bool ExpressionTree::isTerminal(TreeNode<Token> *p) const{
 void ExpressionTree::insert(Token a){
   bool found = false;
   if (this->entrance == NULL){
-    this->entrance = new TreeNode<Token>(a, counter);
+    this->entrance = new TreeNode<Token>(a);
   }else{
     insert(a, this->entrance, found);
   }
-  counter++;
 }
 
 
@@ -120,7 +119,7 @@ void ExpressionTree::insert(Token a, TreeNode<Token> *p, bool &found){
   if(isBinaryOperator(p)){
     if(p->getLeft() == NULL){
       if (!found){
-        p->setLeft(new TreeNode<Token>(a, counter));
+        p->setLeft(new TreeNode<Token>(a));
       }
       found = true;
       return;
@@ -129,7 +128,7 @@ void ExpressionTree::insert(Token a, TreeNode<Token> *p, bool &found){
     }
     if(p->getRight() == NULL){
       if(!found){
-        p->setRight(new TreeNode<Token>(a, counter));
+        p->setRight(new TreeNode<Token>(a));
       }
       found = true;
       return;
@@ -141,7 +140,7 @@ void ExpressionTree::insert(Token a, TreeNode<Token> *p, bool &found){
   if(isUnaryOperator(p)){
      if(p->getRight() == NULL){
       if(!found){
-        p->setRight(new TreeNode<Token>(a, counter));
+        p->setRight(new TreeNode<Token>(a));
       }
       found = true;
       return;
@@ -212,8 +211,8 @@ void ExpressionTree::simplify(){
 
 void ExpressionTree::simplify(TreeNode<Token> *p){
   if(isUnaryOperator(p)){
-    if(p->getLeft() != NULL){
-      simplify(p->getLeft());
+    if(p->getRight() != NULL){
+      simplify(p->getRight());
     }
     unarySimplify(p);
   }
@@ -334,17 +333,25 @@ void ExpressionTree::binarySimplify(TreeNode<Token> *p){
       return;
     }
   }
-  if (p->getLeft()->getInfo().type == NUMBER){
+  if (p->getLeft()->getInfo().type == Token::NUMBER){
     if (p->getLeft()->getInfo().number == 0){
       if (p->getInfo().type == Token::PLUS) {
         a.type = Token::VARIABLE;
         a.variable = p->getRight()->getInfo().variable;
         p->setInfo(a);
-        delete p->getLeft();
-        p->setLeft(NULL);
-        delete p->getRight();
-        p->setRight(NULL);
-        return;
+		if (p->getRight()->getLeft() != NULL){
+          p->setLeft(p->getRight()->getLeft());
+        }else{
+		  deleteSubTree(p->getLeft());
+		  p->setLeft(NULL);
+		}
+		if (p->getRight()->getRight() != NULL){
+          p->setRight(p->getRight()->getRight());
+        }else{
+		  deleteSubTree(p->getRight());
+		  p->setRight(NULL);
+		}
+		return;
       }
       if (p->getInfo().type == Token::MULTIPLY) {
         a.type = Token::NUMBER;
@@ -372,10 +379,18 @@ void ExpressionTree::binarySimplify(TreeNode<Token> *p){
         a.type = Token::VARIABLE;
         a.variable = p->getRight()->getInfo().variable;
         p->setInfo(a);
-        delete p->getLeft();
-        p->setLeft(NULL);
-        delete p->getRight();
-        p->setRight(NULL);
+		if (p->getRight()->getLeft() != NULL){
+          p->setLeft(p->getRight()->getLeft());
+        }else{
+		  deleteSubTree(p->getLeft());
+		  p->setLeft(NULL);
+		}
+		if (p->getRight()->getRight() != NULL){
+          p->setRight(p->getRight()->getRight());
+        }else{
+		  deleteSubTree(p->getRight());
+		  p->setRight(NULL);
+		}
         return;
       }
       if (p->getInfo().type == Token::POWER) {
@@ -390,27 +405,42 @@ void ExpressionTree::binarySimplify(TreeNode<Token> *p){
       }
     }
   }
-  if (p->getRight()->getInfo().type == NUMBER){
-    if (p->getLeft()->getInfo().number == 0){
+  if (p->getRight()->getInfo().type == Token::NUMBER){
+    if (p->getRight()->getInfo().number == 0){
       if (p->getInfo().type == Token::PLUS) {
-        a.type = Token::VARIABLE;
+        a.type = p->getLeft()->getInfo().type;
         a.variable = p->getLeft()->getInfo().variable;
         p->setInfo(a);
-        delete p->getLeft();
-        p->setLeft(NULL);
-        delete p->getRight();
-        p->setRight(NULL);
+        if (p->getLeft()->getRight() != NULL){
+          p->setRight(p->getLeft()->getRight());
+        }else{
+		  deleteSubTree(p->getRight());
+		  p->setRight(NULL);
+		}
+		if (p->getLeft()->getLeft() != NULL){
+          p->setLeft(p->getLeft()->getLeft());
+        }else{
+		  deleteSubTree(p->getLeft());
+		  p->setLeft(NULL);
+		}
         return;
       }
       if (p->getInfo().type == Token::MINUS) {
         a.type = Token::VARIABLE;
         a.variable = p->getLeft()->getInfo().variable;
         p->setInfo(a);
-        delete p->getLeft();
-        p->setLeft(NULL);
-        delete p->getRight();
-        p->setRight(NULL);
-        return;
+        if (p->getLeft()->getRight() != NULL){
+          p->setRight(p->getLeft()->getRight());
+        }else{
+		  deleteSubTree(p->getRight());
+		  p->setRight(NULL);
+		}
+		if (p->getLeft()->getLeft() != NULL){
+          p->setLeft(p->getLeft()->getLeft());
+        }else{
+		  deleteSubTree(p->getLeft());
+		  p->setLeft(NULL);
+		}        return;
       }
       if (p->getInfo().type == Token::MULTIPLY) {
         a.type = Token::NUMBER;
@@ -422,7 +452,7 @@ void ExpressionTree::binarySimplify(TreeNode<Token> *p){
         p->setRight(NULL);
         return;
       }
-      if (p->getInfo().type == Token::MULTIPLY) {
+      if (p->getInfo().type == Token::POWER) {
         a.type = Token::NUMBER;
         a.number = 1;
         p->setInfo(a);
@@ -433,48 +463,106 @@ void ExpressionTree::binarySimplify(TreeNode<Token> *p){
         return;
       }
     }
-    if (p->getLeft()->getInfo().number == 1){
+    if (p->getRight()->getInfo().number == 1){
       if (p->getInfo().type == Token::MULTIPLY) {
         a.type = Token::VARIABLE;
         a.variable = p->getLeft()->getInfo().variable;
         p->setInfo(a);
-        delete p->getLeft();
-        p->setLeft(NULL);
-        delete p->getRight();
-        p->setRight(NULL);
-        return;
+        if (p->getLeft()->getRight() != NULL){
+          p->setRight(p->getLeft()->getRight());
+        }else{
+		  deleteSubTree(p->getRight());
+		  p->setRight(NULL);
+		}
+		if (p->getLeft()->getLeft() != NULL){
+          p->setLeft(p->getLeft()->getLeft());
+        }else{
+		  deleteSubTree(p->getLeft());
+		  p->setLeft(NULL);
+		}return;
       }
       if (p->getInfo().type == Token::POWER) {
         a.type = Token::VARIABLE;
         a.variable = p->getLeft()->getInfo().variable;
         p->setInfo(a);
-        delete p->getLeft();
-        p->setLeft(NULL);
-        delete p->getRight();
-        p->setRight(NULL);
-        return;
+        if (p->getLeft()->getRight() != NULL){
+          p->setRight(p->getLeft()->getRight());
+        }else{
+		  deleteSubTree(p->getRight());
+		  p->setRight(NULL);
+		}
+		if (p->getLeft()->getLeft() != NULL){
+          p->setLeft(p->getLeft()->getLeft());
+        }else{
+		  deleteSubTree(p->getLeft());
+		  p->setLeft(NULL);
+		}return;
       }
     }
   }
 }
 
 
+//takes the root of the tree and deletes tree and children
+void ExpressionTree::deleteSubTree(TreeNode<Token> *p){
+  if (p->getLeft() != NULL)
+    deleteSubTree(p->getLeft());
+  if (p->getRight() != NULL)
+    deleteSubTree(p->getRight());
+  delete p;
+  p = NULL;
+}
 
-
-
-
-
-/*
-void ExpressionTree::switchInfo(TreeNode<Token> *p, Token.type t, double d){
-  Token a = {Token::ERROR, '!'};
-  a.type = t;
-  a.number = d;
-  p->setInfo(a);
-  if(p->getLeft() != NULL){
-    delete p->getLeft();  
+//returns the root of the copy
+TreeNode<Token>* ExpressionTree::copySubTree(TreeNode<Token> *p){
+  Token a;
+  TreeNode<Token> *n;
+  if (p != NULL){
+    a = p->getInfo();
+    n = new TreeNode<Token>(a);
+    n->setLeft(copySubTree(p->getLeft()));
+    n->setRight(copySubTree(p->getRight()));
+  }else{ 
+    return NULL;
   }
-  if(p->getRight() != NULL){
-    delete p->getRight();  
+  return n;
+}
+
+void ExpressionTree::evaluate(char var, double value){
+  Token a;
+  Token b;
+  a.type = Token::VARIABLE;
+  a.variable = var;
+  b.type = Token::NUMBER;
+  b.number = value;
+  if (this->entrance != NULL){
+    evaluate(this->entrance, a, b);
   }
 }
-*/
+
+void ExpressionTree::evaluate(TreeNode<Token> *p, Token a, Token b){
+  printToken(p);
+  if (p->getInfo().type != NULL)
+    cout << "E" << endl;
+  if (isBinaryOperator(p))
+    cout << "B" << endl;
+  if (isUnaryOperator(p))
+    cout << "U" << endl;
+  if (isTerminal(p))
+    cout << "T" << endl;
+  if (p->getInfo().type == a.type){
+	cout << "ALMOST HIT" << endl;
+    if (p->getInfo().variable == a.variable){
+      cout << "HIT" << endl;
+      p->setInfo(b);
+    }
+  }
+  if (p->getLeft() != NULL){
+    cout << "Left" << endl;
+    evaluate(p->getLeft(), a, b);
+  }
+  if (p->getRight() != NULL){
+    cout << "Right" << endl;
+    evaluate(p->getRight(), a, b);
+  }
+}

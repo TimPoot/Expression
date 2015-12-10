@@ -19,6 +19,7 @@ class ExpressionTree : public Tree<Token>{
     void showPreOrder();
     void showInOrder();
     void simplify();
+    void evaluate(char var, double value);
   private:
     void switchInfo(TreeNode<Token> *p, double d);
     void printToken(TreeNode<Token> *p);
@@ -33,6 +34,9 @@ class ExpressionTree : public Tree<Token>{
     void simplify(TreeNode<Token> *p);
     void unarySimplify(TreeNode<Token> *p);
     void binarySimplify(TreeNode<Token> *p);
+    void evaluate(TreeNode<Token> *p, Token a, Token b);
+    void deleteSubTree(TreeNode<Token> *p);
+    TreeNode<Token>* copySubTree(TreeNode<Token> *p);
 };
 
 #endif
