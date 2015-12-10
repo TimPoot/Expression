@@ -251,6 +251,7 @@ void ExpressionTree::unarySimplify(TreeNode<Token> *p){
 
 void ExpressionTree::binarySimplify(TreeNode<Token> *p){
   Token a = {Token::ERROR, '!'};
+  cout << "count" << endl;
   //num . num
   if (p->getLeft()->getInfo().type == Token::NUMBER
    && p->getRight()->getInfo().type == Token::NUMBER
@@ -408,10 +409,12 @@ void ExpressionTree::binarySimplify(TreeNode<Token> *p){
   if (p->getRight()->getInfo().type == Token::NUMBER){
     if (p->getRight()->getInfo().number == 0){
       if (p->getInfo().type == Token::PLUS) {
+		cout << "here" << endl;
         a.type = p->getLeft()->getInfo().type;
         a.variable = p->getLeft()->getInfo().variable;
         p->setInfo(a);
         if (p->getLeft()->getRight() != NULL){
+          cout << "here2" << endl;
           p->setRight(p->getLeft()->getRight());
         }else{
 		  deleteSubTree(p->getRight());
@@ -420,13 +423,14 @@ void ExpressionTree::binarySimplify(TreeNode<Token> *p){
 		if (p->getLeft()->getLeft() != NULL){
           p->setLeft(p->getLeft()->getLeft());
         }else{
+		  cout << "here3" << endl;
 		  deleteSubTree(p->getLeft());
 		  p->setLeft(NULL);
 		}
         return;
       }
       if (p->getInfo().type == Token::MINUS) {
-        a.type = Token::VARIABLE;
+        a.type = p->getLeft()->getInfo().type;
         a.variable = p->getLeft()->getInfo().variable;
         p->setInfo(a);
         if (p->getLeft()->getRight() != NULL){
@@ -465,7 +469,7 @@ void ExpressionTree::binarySimplify(TreeNode<Token> *p){
     }
     if (p->getRight()->getInfo().number == 1){
       if (p->getInfo().type == Token::MULTIPLY) {
-        a.type = Token::VARIABLE;
+        a.type = p->getLeft()->getInfo().type;
         a.variable = p->getLeft()->getInfo().variable;
         p->setInfo(a);
         if (p->getLeft()->getRight() != NULL){
@@ -482,7 +486,7 @@ void ExpressionTree::binarySimplify(TreeNode<Token> *p){
 		}return;
       }
       if (p->getInfo().type == Token::POWER) {
-        a.type = Token::VARIABLE;
+        a.type = p->getLeft()->getInfo().type;
         a.variable = p->getLeft()->getInfo().variable;
         p->setInfo(a);
         if (p->getLeft()->getRight() != NULL){
@@ -505,12 +509,16 @@ void ExpressionTree::binarySimplify(TreeNode<Token> *p){
 
 //takes the root of the tree and deletes tree and children
 void ExpressionTree::deleteSubTree(TreeNode<Token> *p){
-  if (p->getLeft() != NULL)
-    deleteSubTree(p->getLeft());
-  if (p->getRight() != NULL)
-    deleteSubTree(p->getRight());
-  delete p;
-  p = NULL;
+  if (p != NULL){
+    if (p->getLeft() != NULL){
+      deleteSubTree(p->getLeft());
+    }
+    if (p->getRight() != NULL){
+      deleteSubTree(p->getRight());
+    }
+    delete p;
+    p = NULL;
+  }
 }
 
 //returns the root of the copy
@@ -542,10 +550,20 @@ void ExpressionTree::evaluate(char var, double value){
 
 void ExpressionTree::evaluate(TreeNode<Token> *p, Token a, Token b){
   printToken(p);
-  if (p->getInfo().type != NULL)
+  if (p->getInfo().type == Token::ERROR)
     cout << "E" << endl;
   if (isBinaryOperator(p))
     cout << "B" << endl;
+  if (p->getInfo().type == Token::PLUS)
+    cout << "PLUS" << endl;
+  if (p->getInfo().type == Token::MINUS)
+    cout << "MINUS" << endl;
+  if (p->getInfo().type == Token::MULTIPLY)
+    cout << "MULTILY" << endl;
+  if (p->getInfo().type == Token::DIVIDE)
+    cout << "DIVIDE" << endl;
+  if (p->getInfo().type == Token::POWER)
+    cout << "POWER" << endl;
   if (isUnaryOperator(p))
     cout << "U" << endl;
   if (isTerminal(p))

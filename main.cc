@@ -8,7 +8,7 @@ using namespace std;
 int main(){
   ExpressionTree myTree;
   //myTree.parse("+ - 1 2 - 3 4");
-  myTree.parse("+ * 2 x - 1 1");
+  myTree.parse("+ cos x 0");
   //myTree.parse("^ - + cos 20 1 0 1");
   //myTree.parse("+ x - x x");
   cout << "---------------------" << endl;
