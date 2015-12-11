@@ -7,10 +7,6 @@
 
 using namespace std;
 
-
-
-
-
 void ExpressionTree::parse(string s){
   istringstream ss(s);
   Token a;
@@ -27,7 +23,7 @@ Token ExpressionTree::translate(string s){
   Token a {Token::ERROR, '!'};
   
   if(s == "+"){
-  	 a.type = Token::PLUS;
+    a.type = Token::PLUS;
     a.variable = '+';
     return a;
   }else if(s == "-"){
@@ -69,10 +65,6 @@ Token ExpressionTree::translate(string s){
 
   return a;
 }
-
-
-
-
 
 bool ExpressionTree::isBinaryOperator(TreeNode<Token> *p) const{
   if (p->getInfo().type == Token::PLUS
@@ -192,7 +184,7 @@ void ExpressionTree::showInOrder(TreeNode<Token> *p){
 
 void ExpressionTree::printToken(TreeNode<Token> *p){
   if(p->getInfo().type == Token::COS){
-    cout << "cos"; 
+    cout << "cos";
   }else if(p->getInfo().type == Token::SIN){
     cout << "sin";
   }else if(p->getInfo().type == Token::NUMBER){
@@ -251,7 +243,6 @@ void ExpressionTree::unarySimplify(TreeNode<Token> *p){
 
 void ExpressionTree::binarySimplify(TreeNode<Token> *p){
   Token a = {Token::ERROR, '!'};
-  cout << "count" << endl;
   //num . num
   if (p->getLeft()->getInfo().type == Token::NUMBER
    && p->getRight()->getInfo().type == Token::NUMBER
@@ -335,7 +326,7 @@ void ExpressionTree::binarySimplify(TreeNode<Token> *p){
     }
   }
   if (p->getLeft()->getInfo().type == Token::NUMBER){
-    if (p->getLeft()->getInfo().number == 0){
+    if (p->getLeft()->getInfo().number == 0){  //BIG BROTHER IS WATCHING THIS FUNCTION
       if (p->getInfo().type == Token::PLUS) {
         a.type = Token::VARIABLE;
         a.variable = p->getRight()->getInfo().variable;
@@ -407,23 +398,20 @@ void ExpressionTree::binarySimplify(TreeNode<Token> *p){
     }
   }
   if (p->getRight()->getInfo().type == Token::NUMBER){
-    if (p->getRight()->getInfo().number == 0){
+    if (p->getRight()->getInfo().number == 0){ //ONLY THIS IF WORKS, PROB NEED TO FIX THE REST
       if (p->getInfo().type == Token::PLUS) {
-		cout << "here" << endl;
         a.type = p->getLeft()->getInfo().type;
         a.variable = p->getLeft()->getInfo().variable;
         p->setInfo(a);
         if (p->getLeft()->getRight() != NULL){
-          cout << "here2" << endl;
-          p->setRight(p->getLeft()->getRight());
+          p->getRight()->setInfo(p->getLeft()->getRight()->getInfo());
         }else{
-		  deleteSubTree(p->getRight());
-		  p->setRight(NULL);
+		  deleteSubTree(p->getLeft()->getRight());
+		  p->getLeft()->setRight(NULL);
 		}
 		if (p->getLeft()->getLeft() != NULL){
           p->setLeft(p->getLeft()->getLeft());
         }else{
-		  cout << "here3" << endl;
 		  deleteSubTree(p->getLeft());
 		  p->setLeft(NULL);
 		}
