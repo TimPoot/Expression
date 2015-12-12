@@ -550,3 +550,144 @@ void ExpressionTree::evaluate(TreeNode<Token> *p, Token a, Token b){
     evaluate(p->getRight(), a, b);
   }
 }
+
+void ExpressionTree::differentiate(){
+  if(entrance != NULL){
+    differentiate(this->entrance);
+  }
+}
+
+void ExpressionTree::differentiate(TreeNode<Token> *p){
+  Token a = {Token::ERROR, '!'};
+  TreeNode<Token> *copy;
+
+  if(p->getInfo().type == Token::NUMBER){ //d(C)
+    a.type = Token::NUMBER;
+    a.number = 0;
+    p->setInfo(a);
+  }else if(p->getInfo().type == Token::VARIABLE && p->getInfo().variable == 'x'){ // d(x)
+    a.type = Token::NUMBER;
+    a.number = 1;
+    p->setInfo(a);
+  }else if(p->getInfo().type == Token::VARIABLE && p->getInfo().variable != 'x'){ // d(y)
+    a.type = Token::NUMBER;
+    a.number = 0;
+    p->setInfo(a);
+  }else if(p->getInfo().type == Token::POWER){ //d(x^y)
+    if(p->getLeft()->getInfo().type == Token::NUMBER) { // x = C
+      a.type = Token::NUMBER;
+      a.number = p->getLeft()->getInfo().number * p->getRight()->getInfo().number;
+      p->getLeft()->setInfo(a);
+      a.number = p->getRight()->getInfo().number - 1;
+      p->getRight()->setInfo(a);
+    }else if(p->getLeft()->getInfo().type == Token::VARIABLE){ // x = var
+      a.type = Token::NUMBER;
+      a.number = p->getRight()->getInfo().number;
+      p->getLeft()->setLeft(new TreeNode<Token>(a));
+      a.type = Token::VARIABLE;
+      a.variable = p->getLeft()->getInfo().variable;
+      p->getLeft()->setRight(new TreeNode<Token>(a));
+      a.type = Token::MULTIPLY;
+      a.variable = '*';
+      p->getLeft()->setInfo(a);
+      a.type = Token::NUMBER;
+      a.number = p->getRight()->getInfo().number - 1;
+      p->getRight()->setInfo(a);
+    }else{ // x = expression
+      copy = copySubTree(p->getLeft());
+      int y = p->getRight()->getInfo().number;
+      deleteSubTree(p->getLeft());
+      p->setRight(copy);
+      copy = copySubTree(p->getRight());
+      a.type = Token::MULTIPLY;
+      a.variable = '*';
+      p->setInfo(a);
+      a.type = Token::POWER;
+      a.variable = '^';
+      p->setLeft(new TreeNode<Token>(a));
+      a.type = Token::MULTIPLY;
+      a.variable = '*';
+      p->getLeft()->setLeft(new TreeNode<Token>(a));
+      a.type = Token::NUMBER;
+      a.number = y - 1;
+      p->getLeft()->setRight(new TreeNode<Token>(a));
+      a.number = y;
+      p->getLeft()->getLeft()->setLeft(new TreeNode<Token>(a));
+      p->getLeft()->getLeft()->setRight(copy);
+      differentiate(p->getRight());
+    }
+  }else if(p->getInfo().type == Token::COS){ //we don't treat - like we should, huge fucking problem
+    /*if(p->getRight()->getInfo().type == Token::NUMBER || p->getRight()->getInfo().type == Token::VARIABLE){
+      a.type =  p->getRight()->getInfo().type;
+      if(p->getRight()->getInfo().type == Token::NUMBER){
+        a.number = p->getRight()->getInfo().number;
+      }else{
+        a.variable = p->getRight()->getInfo().variable;
+      }
+      p->getRight()->setRight(new TreeNode<Token>(a));
+      a.type = Token::SIN;
+      a.variable = 's';
+      p->getRight()->setInfo(a);
+      a.type =
+      p->setInfo(a);
+    }*/
+  }else if(p->getInfo().type == Token::SIN){ // d(sin(x))
+    if(p->getRight()->getInfo().type == Token::NUMBER || p->getRight()->getInfo().type == Token::VARIABLE) {
+      a.type = Token::COS;
+      a.variable = 'c';
+      p->setInfo(a);
+    }else{
+      copy = copySubTree(p->getRight());
+      a.type = Token::COS;
+      a.variable = 'c';
+      p->setLeft(new TreeNode<Token>(a));
+      p->getLeft()->setRight(copy);
+      a.type = Token::MULTIPLY;
+      a.variable = '*';
+      p->setInfo(a);
+      differentiate(p->getRight());
+    }
+  }else if(p->getInfo().type == Token::PLUS){ // d(f+g)
+    differentiate(p->getLeft());
+    differentiate(p->getRight());
+  }else if(p->getInfo().type == Token::MULTIPLY){ // d(f*g)
+    copy = copySubTree(p->getLeft());
+    deleteSubTree(p->getLeft());
+    a.type = Token::MULTIPLY;
+    a.variable = '*';
+    p->setLeft(new TreeNode<Token>(a));
+    p->getLeft()->setLeft(copy);
+    p->getLeft()->setRight(copySubTree(p->getRight()));
+    deleteSubTree(p->getRight());
+    p->setRight(copySubTree(p->getLeft()));
+    a.type = Token::PLUS;
+    a.variable = '+';
+    p->setInfo(a);
+    differentiate(p->getLeft()->getLeft());
+    differentiate(p->getRight()->getRight());
+  }else if(p->getInfo().type == Token::DIVIDE){
+    copy = copySubTree(p->getLeft());
+    deleteSubTree(p->getLeft());
+    a.type = Token::MINUS;
+    a.variable = '-';
+    p->setLeft(new TreeNode<Token>(a));
+    a.type = Token::MULTIPLY;
+    a.variable = '*';
+    p->getLeft()->setLeft(new TreeNode<Token>(a));
+    p->getLeft()->getLeft()->setLeft(copy);
+    p->getLeft()->getLeft()->setRight(copySubTree(p->getRight()));
+    p->getLeft()->setRight(copySubTree(p->getLeft()->getLeft()));
+    copy = copySubTree(p->getRight());
+    deleteSubTree(p->getRight());
+    a.type = Token::POWER;
+    a.variable = '^';
+    p->setRight(new TreeNode<Token>(a));
+    p->getRight()->setLeft(copy);
+    a.type = Token::NUMBER;
+    a.number = 2;
+    p->getRight()->setRight(new TreeNode<Token>(a));
+    differentiate(p->getLeft()->getLeft()->getLeft());
+    differentiate(p->getLeft()->getRight()->getRight());
+  }
+}
+

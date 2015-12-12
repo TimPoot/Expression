@@ -19,8 +19,10 @@ class ExpressionTree : public Tree<Token>{
     void showPreOrder();
     void showInOrder();
     void simplify();
+    void differentiate();
     void evaluate(char var, double value);
   private:
+    void differentiate(TreeNode<Token> *p);
     void switchInfo(TreeNode<Token> *p, double d);
     void printToken(TreeNode<Token> *p);
     void showPreOrder(TreeNode<Token> *p);

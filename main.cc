@@ -7,21 +7,12 @@ using namespace std;
 
 int main(){
   ExpressionTree myTree;
-  //myTree.parse("+ - 1 2 - 3 4");
-  myTree.parse("+ cos x 0");
-  //myTree.parse("^ - + cos 20 1 0 1");
-  //myTree.parse("+ x - x x");
+  myTree.parse("+ / * ^ x 3 - y sin + * 2 x 6 + -3.7 * 15 x 5");
   cout << "---------------------" << endl;
   myTree.showPreOrder();
   myTree.showInOrder();
-  //myTree.evaluate('x', 10);
-  myTree.simplify();
-  cout << "---------------------" << endl;
-  myTree.showPreOrder();
-  myTree.showInOrder();
-  myTree.evaluate('x', 10);
-  //myTree.simplify();
-  cout << "---------------------" << endl;
+  myTree.differentiate();
+  cout << "---------ddd----------" << endl;
   myTree.showPreOrder();
   myTree.showInOrder();
   return 0;
