@@ -1,4 +1,4 @@
-#include "ExpressionTree.h" 
+#include "ExpressionTree.h"
 #include <sstream>
 #include <iostream>
 #include <stdlib.h>
@@ -11,7 +11,6 @@ void ExpressionTree::parse(string s){
   istringstream ss(s);
   Token a;
   while (ss >> s){
-    cout << s << endl;
     a = translate(s);
     insert(a);
   } 
