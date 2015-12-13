@@ -15,6 +15,8 @@ struct Token {
 
 class ExpressionTree : public Tree<Token>{
   public:
+    ExpressionTree();
+    ~ExpressionTree();
     void deleteTree();
     void saveAsDot(string fileName, string graphName);
     void parse (string s);

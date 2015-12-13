@@ -42,6 +42,7 @@ int main(){
     if(input == "end"){
       exit = true;
     }else if(input == "exp"){
+      myTree.deleteTree();
       getline(cin, input);
       input.erase(0, 1);
       myTree.parse(input);

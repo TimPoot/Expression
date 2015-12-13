@@ -8,6 +8,12 @@
 
 using namespace std;
 
+ExpressionTree::ExpressionTree(){} //constructor
+
+ExpressionTree::~ExpressionTree(){ //destructor
+  deleteTree();
+}
+
 void ExpressionTree::parse(string s){
   istringstream ss(s);
   Token a;
@@ -16,7 +22,6 @@ void ExpressionTree::parse(string s){
     insert(a);
   } 
 }
-
 
 //??
 Token ExpressionTree::translate(string s){
@@ -747,6 +752,7 @@ void ExpressionTree::saveAsDot(ofstream &output, TreeNode<Token> *p, int label){
 void ExpressionTree::deleteTree(){
   if(this->entrance != NULL) {
     deleteSubTree(this->entrance);
+    this->entrance = NULL;
   }
 }
 
