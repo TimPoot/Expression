@@ -744,3 +744,10 @@ void ExpressionTree::saveAsDot(ofstream &output, TreeNode<Token> *p, int label){
   }
 }
 
+void ExpressionTree::deleteTree(){
+  if(this->entrance != NULL) {
+    deleteSubTree(this->entrance);
+  }
+}
+
+
