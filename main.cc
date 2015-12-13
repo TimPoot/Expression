@@ -63,7 +63,7 @@ int main(){
     }
   }
 
-  cout << "Programma is sluit af." << endl;
+  cout << "Programma sluit af." << endl;
 
   return 0;
 }
