@@ -615,21 +615,33 @@ void ExpressionTree::differentiate(TreeNode<Token> *p){
       p->getLeft()->getLeft()->setRight(copy);
       differentiate(p->getRight());
     }
-  }else if(p->getInfo().type == Token::COS){ //we don't treat - like we should, huge fucking problem
-    /*if(p->getRight()->getInfo().type == Token::NUMBER || p->getRight()->getInfo().type == Token::VARIABLE){
-      a.type =  p->getRight()->getInfo().type;
-      if(p->getRight()->getInfo().type == Token::NUMBER){
-        a.number = p->getRight()->getInfo().number;
-      }else{
-        a.variable = p->getRight()->getInfo().variable;
-      }
+  }else if(p->getInfo().type == Token::COS){ //d(cos(x))
+    if(p->getRight()->getInfo().type == Token::NUMBER || p->getRight()->getInfo().type == Token::VARIABLE) {
+      a = p->getRight()->getInfo();
       p->getRight()->setRight(new TreeNode<Token>(a));
       a.type = Token::SIN;
       a.variable = 's';
       p->getRight()->setInfo(a);
-      a.type =
+      a.type = Token::MULTIPLY;
+      a.variable = '*';
       p->setInfo(a);
-    }*/
+      a.type = Token::NUMBER;
+      a.number = -1;
+      p->setLeft(new TreeNode<Token>(a));
+    }else{
+      a.type = Token::MULTIPLY;
+      a.variable = '*';
+      p->setInfo(a);
+      p->setLeft(new TreeNode<Token>(a));
+      a.type = Token::NUMBER;
+      a.number = -1;
+      p->getLeft()->setLeft(new TreeNode<Token>(a));
+      a.type = Token::SIN;
+      a.variable = 's';
+      p->getLeft()->setRight(new TreeNode<Token>(a));
+      p->getLeft()->getRight()->setRight(copySubTree(p->getRight()));
+      differentiate(p->getRight());
+    }
   }else if(p->getInfo().type == Token::SIN){ // d(sin(x))
     if(p->getRight()->getInfo().type == Token::NUMBER || p->getRight()->getInfo().type == Token::VARIABLE) {
       a.type = Token::COS;
