@@ -14,6 +14,7 @@ ExpressionTree::~ExpressionTree(){ //destructor
   deleteTree();
 }
 
+//takes string and insert text untill a space is found, then repeat untill end of string
 void ExpressionTree::parse(string s){
   istringstream ss(s);
   Token a;
@@ -23,7 +24,7 @@ void ExpressionTree::parse(string s){
   } 
 }
 
-//??
+//looks what the input says and translates it to a proper token, return this token
 Token ExpressionTree::translate(string s){
   Token a {Token::ERROR, '!'};
   
@@ -102,6 +103,7 @@ bool ExpressionTree::isTerminal(TreeNode<Token> *p) const{
     return false;
 }
 
+//public insert function
 void ExpressionTree::insert(Token a){
   bool found = false;
   if (this->entrance == NULL){
@@ -111,7 +113,7 @@ void ExpressionTree::insert(Token a){
   }
 }
 
-
+//private insert function, inserts node appropriate to the kind of operator it is
 void ExpressionTree::insert(Token a, TreeNode<Token> *p, bool &found){
   if(isBinaryOperator(p)){
     if(p->getLeft() == NULL){
@@ -189,6 +191,7 @@ void ExpressionTree::showInOrder(TreeNode<Token> *p){
   }
 }
 
+//prints type of token of argument to terminal
 void ExpressionTree::printToken(TreeNode<Token> *p){
   if(p->getInfo().type == Token::COS){
     cout << "cos";
@@ -201,6 +204,7 @@ void ExpressionTree::printToken(TreeNode<Token> *p){
   }
 }
 
+//public simplify function
 void ExpressionTree::simplify(){
   if (this->entrance != NULL){
     simplify(this->entrance);
@@ -208,6 +212,8 @@ void ExpressionTree::simplify(){
   cout << "Tree is empty!" << endl;
 }
 
+//private simplify function
+//checks if unarysimplify or binarysimplify needs to be called
 void ExpressionTree::simplify(TreeNode<Token> *p){
   if(isUnaryOperator(p)){
     if(p->getRight() != NULL){
@@ -226,6 +232,7 @@ void ExpressionTree::simplify(TreeNode<Token> *p){
   }
 }
 
+//simplifies all unary operators
 void ExpressionTree::unarySimplify(TreeNode<Token> *p){
   Token a = {Token::ERROR, '!'};
   if (p->getRight()->getInfo().type == Token::NUMBER){
@@ -248,6 +255,7 @@ void ExpressionTree::unarySimplify(TreeNode<Token> *p){
   }    
 }
 
+//simplifies all binaryoperators
 void ExpressionTree::binarySimplify(TreeNode<Token> *p){
   Token a = {Token::ERROR, '!'};
   //num . num
@@ -532,6 +540,7 @@ TreeNode<Token>* ExpressionTree::copySubTree(TreeNode<Token> *p){
   return n;
 }
 
+//public evaluate function, calls the private variant
 void ExpressionTree::evaluate(char var, double value){
   Token a;
   Token b;
@@ -544,6 +553,8 @@ void ExpressionTree::evaluate(char var, double value){
   }
 }
 
+//private evaluate function
+//finds variable in Token a and replaces it with number in Token b
 void ExpressionTree::evaluate(TreeNode<Token> *p, Token a, Token b){
   if (p->getInfo().type == a.type){
     if (p->getInfo().variable == a.variable){
@@ -558,12 +569,15 @@ void ExpressionTree::evaluate(TreeNode<Token> *p, Token a, Token b){
   }
 }
 
+//public differentiate function, calls private variant
 void ExpressionTree::differentiate(){
   if(entrance != NULL){
     differentiate(this->entrance);
   }
 }
 
+//private differentiate function
+//differentiates entire tree according to differentaiting rules
 void ExpressionTree::differentiate(TreeNode<Token> *p){
   Token a = {Token::ERROR, '!'};
   TreeNode<Token> *copy;
@@ -710,6 +724,9 @@ void ExpressionTree::differentiate(TreeNode<Token> *p){
   }
 }
 
+//public saveAsDot
+//prints begin and end of fill to output file
+//calls private variant
 void ExpressionTree::saveAsDot(string fileName, string graphName){
   ofstream output;
 
@@ -720,6 +737,8 @@ void ExpressionTree::saveAsDot(string fileName, string graphName){
   output.close();
 }
 
+//private saveAsDot
+//reads tree and saves the tree to .dot file
 void ExpressionTree::saveAsDot(ofstream &output, TreeNode<Token> *p, int label){
   if(p != NULL){
     if(p->getInfo().type == Token::NUMBER) {
@@ -749,6 +768,7 @@ void ExpressionTree::saveAsDot(ofstream &output, TreeNode<Token> *p, int label){
   }
 }
 
+//delete entire tree
 void ExpressionTree::deleteTree(){
   if(this->entrance != NULL) {
     deleteSubTree(this->entrance);
