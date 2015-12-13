@@ -174,10 +174,12 @@ void ExpressionTree::showInOrder(TreeNode<Token> *p){
   if(p == NULL){
     return;
   }else{
+    cout << "(";
     showInOrder(p->getLeft());
     printToken(p);
     cout << " ";
     showInOrder(p->getRight());
+    cout << ")";
   }
 }
 
