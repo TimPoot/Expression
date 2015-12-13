@@ -54,10 +54,9 @@ int main(){
     }else if(input == "print"){
       myTree.showInOrder();
     }else if(input == "dot"){
-      cout << "dit moet nog, label is gonezo, cannot be bothered atm" << endl;
-      //getline(cin, input);
-      //input.erase(0, 1);
-      //myTree.saveAsDot(input, "expression");
+      getline(cin, input);
+      input.erase(0, 1);
+      myTree.saveAsDot(input, "expression");
     }else if(input == "diff"){
       myTree.differentiate();
     }

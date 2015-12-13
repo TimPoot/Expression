@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string>
 #include <cmath>
+#include <fstream>
 
 using namespace std;
 
@@ -701,6 +702,45 @@ void ExpressionTree::differentiate(TreeNode<Token> *p){
     p->getRight()->setRight(new TreeNode<Token>(a));
     differentiate(p->getLeft()->getLeft()->getLeft());
     differentiate(p->getLeft()->getRight()->getRight());
+  }
+}
+
+void ExpressionTree::saveAsDot(string fileName, string graphName){
+  ofstream output;
+
+  output.open(fileName.c_str(), fstream::out);
+  output << "digraph " << graphName << "{" << endl;
+  saveAsDot(output, entrance, 0);
+  output << "}" << endl;
+  output.close();
+}
+
+void ExpressionTree::saveAsDot(ofstream &output, TreeNode<Token> *p, int label){
+  if(p != NULL){
+    if(p->getInfo().type == Token::NUMBER) {
+      output << "  " << label << " [label ='" << p->getInfo().number << "']" << endl;
+    }else{
+      output << "  " << label << " [label ='" << p->getInfo().variable << "']" << endl;
+    }
+
+    if(p->getLeft() != NULL) {
+      if(p->getLeft()->getInfo().type == Token::NUMBER) {
+        output << "  " << label << " -> " << label + 1 << endl;
+      }else{
+        output << "  " << label << " -> " << label + 1 << endl;
+      }
+    }
+
+    if(p->getRight() != NULL) {
+      if(p->getRight()->getInfo().type == Token::NUMBER) {
+        output << "  " << label << " -> " << label + 2 << endl;
+      }else{
+        output << "  " << label << " -> " << label + 2 << endl;
+      }
+    }
+
+    saveAsDot(output, p->getLeft(), label + 1);
+    saveAsDot(output, p->getRight(), label + 2);
   }
 }
 

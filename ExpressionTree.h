@@ -15,6 +15,7 @@ struct Token {
 
 class ExpressionTree : public Tree<Token>{
   public:
+    void saveAsDot(string fileName, string graphName);
     void parse (string s);
     void showPreOrder();
     void showInOrder();
@@ -22,6 +23,7 @@ class ExpressionTree : public Tree<Token>{
     void differentiate();
     void evaluate(char var, double value);
   private:
+    void saveAsDot(ofstream &output, TreeNode<Token> *p, int label);
     void differentiate(TreeNode<Token> *p);
     void switchInfo(TreeNode<Token> *p, double d);
     void printToken(TreeNode<Token> *p);
